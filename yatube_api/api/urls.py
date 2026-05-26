@@ -18,7 +18,9 @@ router.register(
 )
 
 urlpatterns = [
-    path('jwt/create/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(
+        'jwt/create/', TokenObtainPairView.as_view(), name='token_obtain_pair'
+    ),
     path('jwt/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('jwt/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('', include(router.urls)),
