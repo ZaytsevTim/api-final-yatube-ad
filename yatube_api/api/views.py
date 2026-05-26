@@ -98,3 +98,4 @@ class FollowViewSet(viewsets.ModelViewSet):
             raise ValidationError({'following': 'Вы уже подписаны на этого пользователя.'})
 
         serializer.save(user=self.request.user, following=following)
+
