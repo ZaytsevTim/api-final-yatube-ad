@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions, filters
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 
 from posts.models import Post, Group, Follow
 from .serializers import (
@@ -16,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-pub_date')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class =  LimitOffsetPagination
+    pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
