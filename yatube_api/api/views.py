@@ -13,7 +13,7 @@ User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-pub_date')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = PageNumberPagination
@@ -33,14 +33,21 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('id')  # добавить order_by
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = None  # отключить пагинацию
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = None  
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+        return post.comments.all().order_by('created')  # добавить order_by
 
     def get_queryset(self):
         post_id = self.kwargs.get('post_id')
@@ -68,9 +75,10 @@ class FollowViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['following__username']
+    pagination_class = None  # отключить пагинацию
 
     def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
+        return Follow.objects.filter(user=self.request.user).order_by('id')
 
     def perform_create(self, serializer):
         following_id = self.request.data.get('following')
