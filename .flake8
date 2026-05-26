@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 119
+ignore = 
+    D100,
+    D101,
+    D102,
+    D103,
+    D104,
+    D105,
+    D106,
+    E128,
+    E124,
+    F401,
+    W391
+exclude = 
+    venv,
+    __pycache__,
+    migrations,
+    .git

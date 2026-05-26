@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.pagination import PageNumberPagination
 
-from posts.models import Post, Group, Comment, Follow
+from posts.models import Post, Group, Follow
 from .serializers import (
     PostSerializer, GroupSerializer, CommentSerializer, FollowSerializer
 )
@@ -30,6 +30,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if instance.author != self.request.user:
             raise PermissionDenied('Удаление чужого контента запрещено!')
         instance.delete()
+
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
@@ -73,10 +74,10 @@ class FollowViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         following_id = self.request.data.get('following')
-        
+
         if not following_id:
             raise ValidationError({'following': 'Это поле обязательно.'})
-        
+
         # Проверяем, передан ли ID или username
         try:
             # Пробуем найти по ID
@@ -87,12 +88,13 @@ class FollowViewSet(viewsets.ModelViewSet):
                 following = User.objects.get(username=following_id)
             except User.DoesNotExist:
                 raise ValidationError({'following': 'Пользователь не найден.'})
-        
+
         if following == self.request.user:
-            raise ValidationError({'following': 'Нельзя подписаться на самого себя.'})
-        
+            raise ValidationError(
+                {'following': 'Нельзя подписаться на самого себя.'}
+            )
+
         if Follow.objects.filter(user=self.request.user, following=following).exists():
             raise ValidationError({'following': 'Вы уже подписаны на этого пользователя.'})
-        
-        serializer.save(user=self.request.user, following=following)
 
+        serializer.save(user=self.request.user, following=following)
