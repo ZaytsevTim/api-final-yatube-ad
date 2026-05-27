@@ -19,7 +19,8 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_pagination_class(self):
-        if 'limit' in self.request.query_params or 'offset' in self.request.query_params:
+        if ('limit' in self.request.query_params or
+            'offset' in self.request.query_params):
             return LimitOffsetPagination
         return None
 
@@ -28,7 +29,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if pagination_class:
             self.pagination_class = pagination_class
             return super().list(request, *args, **kwargs)
-        
+
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -63,11 +64,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, id=post_id)
         return post.comments.all().order_by('created')  # добавить order_by
-
-    def get_queryset(self):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, id=post_id)
-        return post.comments.all()
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get('post_id')
