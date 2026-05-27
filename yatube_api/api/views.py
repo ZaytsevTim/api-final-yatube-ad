@@ -14,9 +14,10 @@ User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-pub_date')
+    queryset = Post.objects.all().order_by('author__username')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = None  # <-- отключаем пагинацию
 
     def get_pagination_class(self):
         if ('limit' in self.request.query_params
