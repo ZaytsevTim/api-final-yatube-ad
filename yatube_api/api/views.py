@@ -19,8 +19,8 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_pagination_class(self):
-        if ('limit' in self.request.query_params or
-            'offset' in self.request.query_params):
+        if ('limit' in self.request.query_params
+                or 'offset' in self.request.query_params):
             return LimitOffsetPagination
         return None
 
